@@ -65,8 +65,11 @@ string globalQuitPage = "11"; // this page number will cause all threads to quit
 
 string PageNo = "0";
 
+#if WIN32
+string rootFolder ("Books\");
+#else
 string rootFolder ( "/home/james/Documents/HoloBook/Books/" );
-
+#endif
 string bookFolder;
 
 string imageNameBase("test-" );

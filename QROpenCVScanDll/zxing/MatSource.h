@@ -18,11 +18,11 @@
 #define __MAT_SOURCE_H_
 
 #include <zxing/LuminanceSource.h>
-/* old windows include files
+#if WIN32
 #include <opencv2/core/core.hpp>
-*/
+#else
 #include <opencv4/opencv2/core/core.hpp>
-
+#endif
 
 class MatSource : public zxing::LuminanceSource {
 private:
