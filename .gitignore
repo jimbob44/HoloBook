@@ -4,6 +4,7 @@ build/
 obj/
 log.txt
 piMakeFile
+token
 
 # Prerequisites
 *.d

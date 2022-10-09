@@ -13,12 +13,12 @@ find_package(X11 REQUIRED)
 
 
 add_library(QROpenCV SHARED IMPORTED)
-set_target_properties(QROpenCV PROPERTIES IMPORTED_LOCATION ${CMAKE_SOURCE_DIR}/libQROpenCVScanDll.so)
 
+#set_target_properties(QROpenCV PROPERTIES IMPORTED_LOCATION ${CMAKE_SOURCE_DIR}/libQROpenCVScanDll.so)
 
 target_include_directories(HoloBook PUBLIC ${OpenCV_INCLUDE_DIRS} ${X11_INCLUDE_DIR} ${CMAKE_SOURCE_DIR}/QROpenCVScanDll)
 
-target_link_libraries(HoloBook QROpenCVScanDll QROpenCV ${OpenCV_LIBS} ${X11_LIBRARIES} stdc++fs)
+target_link_libraries(HoloBook QROpenCVScanDll ${OpenCV_LIBS} ${X11_LIBRARIES} stdc++fs)
 
 set_target_properties(HoloBook PROPERTIES LINK_FLAGS "-lpthread")
 

@@ -197,6 +197,12 @@ while(j !=0 )
         bookFolder = bookList.at(localPageNo-1)  + "/";
         programOutput("Selected Book: " + bookNames.at(localPageNo-1) + " Opening Book in: " + to_string(j) + " seconds \r",true);
 
+        //TODO instead of using program output utilise image writing capabilities of OpenCV to make a nice display of possible books to select fro
+        // https://www.geeksforgeeks.org/write-on-an-image-using-opencv-in-cpp/
+        // See link above for possible method
+        //
+
+
 
         if(localPageNo ==  currentPage)
             j--;
