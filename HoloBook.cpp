@@ -65,11 +65,9 @@ string globalQuitPage = "11"; // this page number will cause all threads to quit
 
 string PageNo = "0";
 
-#if WIN32
-string rootFolder ("Books\");
-#else
-string rootFolder ( "/home/james/Documents/HoloBook/Books/" );
-#endif
+
+string rootFolder ( "Books/" );// look for the books in a local folder called books. Books should have a folder each containing page images
+
 string bookFolder;
 
 string imageNameBase("test-" );
@@ -164,6 +162,7 @@ fflush(stdout);
 //thread functions
 void bookSelector()
 {
+
  vector<string> bookList;
 
 string e;
@@ -175,12 +174,27 @@ bookList = get_directories(rootFolder); //list all the folders in the root direc
 int n = 1;
 unsigned int localPageNo;
 unsigned int currentPage;
+string displayString;
+string bookElement;
 
 deque<string> bookNames;
 
+
+
+//local lambda function for writing text on an Image
+auto putTextlam = [](int point1, int point2,Mat img,string dispString)
+{
+                Point org(point1, point2);
+                putText(img, dispString, org,
+                FONT_HERSHEY_SIMPLEX, 0.5,
+                Scalar(0, 0, 0), 1, LINE_AA);
+
+};
+
 for (auto & element : bookList) {
-    e = element.substr(rootFolder.length(),element.length() - rootFolder.length());
+    e = element.substr(rootFolder.length(),element.length() - rootFolder.length()); //extract just the book name from the filepath
     bookNames.push_back(e);
+    //place a number and a new line character before outputting to the terminal the list of book names
     e = to_string(n) + " " + e;
     e += "\n";
     programOutput(e);
@@ -198,24 +212,43 @@ while(j !=0 )
     if(localPageNo <= bookList.size() && localPageNo != 0)
     {
         bookFolder = bookList.at(localPageNo-1)  + "/";
+        displayString = "Selected Book: " + bookNames.at(localPageNo-1) + " Opening Book in: " + to_string(j) + " seconds \r";
         programOutput("Selected Book: " + bookNames.at(localPageNo-1) + " Opening Book in: " + to_string(j) + " seconds \r",true);
 
-        //TODO instead of using program output utilise image writing capabilities of OpenCV to make a nice display of possible books to select fro
-        // https://www.geeksforgeeks.org/write-on-an-image-using-opencv-in-cpp/
-        // See link above for possible method
-        //
+        // Generate a blank white image to draw text on
+        Mat bookListImage(screenWidth,screenHeight, CV_8UC3,
+              Scalar(255, 255, 255));
+        //make a window that will fill the entire screen
+              namedWindow( "Book Selector", WINDOW_NORMAL| WINDOW_FREERATIO); // Create a window for display. Only execute on first loop
+                //resizeWindow("Display Window",1366,768);
 
+              setWindowProperty("Book Selector",WND_PROP_FULLSCREEN,WINDOW_FULLSCREEN);
 
+         // Writing over the Image
+            // list the books in Booknames
+            int n = 1;
+            for (auto & element: bookNames)
+            {
+                // write out each book that is in the database in a list
+                putTextlam(30,100 + n*25,bookListImage,to_string(n) + " " + element);
+                n++;
+            }
+            // Show the countdown until the chosen book is selected
+            putTextlam(30,100,bookListImage,displayString);
+
+        //show the image with the list of books and the selection countdown
+        imshow("Book Selector",bookListImage);
+        waitKey(1); // wait 1 millisecond between refreshes
 
         if(localPageNo ==  currentPage)
-            j--;
+            j--; // continue countdown if the same book is selected
         else
-            j = BOOK_SELECTOR_TIMER_COUNT;
+            j = BOOK_SELECTOR_TIMER_COUNT; // reset the countdown timer if another book has been selected to read
 
         currentPage = localPageNo;
     }
 }
-
+ destroyWindow("Book Selector");
 }
 
 void quitAllThreads()

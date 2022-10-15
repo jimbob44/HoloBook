@@ -5,6 +5,8 @@ obj/
 log.txt
 piMakeFile
 token
+gitcommitscript.sh
+.gitignore
 
 # Prerequisites
 *.d
@@ -38,3 +40,9 @@ token
 *.exe
 *.out
 *.app
+
+#CodeBlocks crap
+
+*.cbp
+*.layout
+*.depend

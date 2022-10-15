@@ -1,6 +1,4 @@
-#git init
-#git add .
-#git commit -m "my first Commit"
-#git remote add origin {URL} 
-#git push origin master
+git commit -m $1
+git remote add origin git@github.com:jimbob44/HoloBook.git 
+git push origin master
 
