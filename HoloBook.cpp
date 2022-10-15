@@ -310,7 +310,7 @@ void pageScan()
             //extract the page number
             localPageNo = scannedString.substr(4,SCAN_NO); // return all characters until end of string
 
-            #ifdef PI
+            #ifdef PI // PI specific compile issues
             np = stoi(PageNo);
             localPageNo = to_string(np);
             #endif // PI
