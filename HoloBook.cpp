@@ -18,31 +18,31 @@ void getScreenResolution(int &width, int &height) {
 
 
 //function taken from https://stackoverflow.com/questions/41841553/convert-magickimage-to-cvmat
-bool copyImageToMat(Magick::Image & im_image, cv::Mat & cv_image)
+void copyImageToMat(Magick::Image & im_image, cv::Mat & cv_image)
 {
     // Get size of image.
-    size_t
+    int
         w = im_image.columns(),
         h = im_image.rows();
 
     // Allocate enough bytes for image data.
-    unsigned char blob[w * h * 3];
+//    unsigned char blob[w * h * 3];
 
     // Write image data to blob.
-    im_image.write(0, 0, w, h, "RGB", Magick::CharPixel, &blob);
+   // cv::Mat cv_temp(h, w, CV_8UC3);
 
-
-    // Construct new Mat image.
-    cv::Mat cv_temp((int)h, (int)w, CV_8UC3, blob);
+    im_image.write(0, 0, w, h, "BGR", Magick::CharPixel, cv_image.data);
 
 
     // Was any work done?
+    /*
     bool dataWasCopied = !cv_temp.empty();
     if (dataWasCopied) {
         // Copy data to destination.
         cv_image = cv_temp.clone();
     }
     return dataWasCopied;
+    */
 }
 
 
@@ -423,11 +423,15 @@ void displayPages()
 
                              im.adaptiveResize(Magick::Geometry(768, 1366)); //screenGeom
                              im.write("Output.png");
-                      //       imw = im.columns();
-                       //      imh = im.rows();
 
                              // Unpack Magick++ pixels into OpenCV Mat structure
-                            if(copyImageToMat(im,image)) {programOutput("Data was successfully copied");}
+                                image.create(im.rows(),im.columns(),CV_8UC3);
+
+
+                            //    im.write(0, 0, im.rows(), im.columns(), "BGR", Magick::CharPixel, image.data);
+
+
+                          //  if(copyImageToMat(im,image)) {programOutput("Data was successfully copied");}
                             // Mat tempImage(imh,imw,CV_8UC3);
 
                             // im.write(0,0,imw,imh,"BGR",Magick::CharPixel,tempImage.data);
@@ -436,7 +440,7 @@ void displayPages()
                              // https://stackoverflow.com/questions/41841553/convert-magickimage-to-cvmat
                              // https://legacy.imagemagick.org/discourse-server/viewtopic.php?t=13301
 
-                           //image = imread(samples::findFile("Output.png"), IMREAD_COLOR );
+                            image = imread(samples::findFile("Output.png"), IMREAD_COLOR );
                             //imwrite("cvoutput.png",image); // appears that the Image to mat copy is not working.
                             // in the meantime workaround in place that will read and write to disc to convert from Magick to Mat
 
