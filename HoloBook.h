@@ -16,7 +16,7 @@
 #endif // PI
 
 #define MAX_COMMAND_LIST_SIZE 50
-#define BOOK_SELECTOR_TIMER_COUNT 10
+#define BOOK_SELECTOR_TIMER_COUNT 2
 
 
 #if WIN32
@@ -38,6 +38,7 @@
 #include <algorithm>
 #include <deque>
 #include <thread>
+#include <Magick++.h>
 
 using namespace std;
 using namespace cv;

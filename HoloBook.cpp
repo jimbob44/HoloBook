@@ -17,6 +17,36 @@ void getScreenResolution(int &width, int &height) {
 }
 
 
+//function taken from https://stackoverflow.com/questions/41841553/convert-magickimage-to-cvmat
+bool copyImageToMat(Magick::Image & im_image, cv::Mat & cv_image)
+{
+    // Get size of image.
+    size_t
+        w = im_image.columns(),
+        h = im_image.rows();
+
+    // Allocate enough bytes for image data.
+    unsigned char blob[w * h * 3];
+
+    // Write image data to blob.
+    im_image.write(0, 0, w, h, "RGB", Magick::CharPixel, &blob);
+
+
+    // Construct new Mat image.
+    cv::Mat cv_temp((int)h, (int)w, CV_8UC3, blob);
+
+
+    // Was any work done?
+    bool dataWasCopied = !cv_temp.empty();
+    if (dataWasCopied) {
+        // Copy data to destination.
+        cv_image = cv_temp.clone();
+    }
+    return dataWasCopied;
+}
+
+
+
 Mat rotate(Mat src, double angle)
 {
     Mat dst;
@@ -75,7 +105,7 @@ string imageNameBase("test-" );
 
 int screenWidth;
 int screenHeight;
-
+Magick::Geometry screenGeom;
 
 
 //shared memory functions
@@ -211,7 +241,7 @@ while(j !=0 )
     sleep(1);
     if(localPageNo <= bookList.size() && localPageNo != 0)
     {
-        bookFolder = bookList.at(localPageNo-1)  + "/";
+        bookFolder = bookList.at(localPageNo-1);
         displayString = "Selected Book: " + bookNames.at(localPageNo-1) + " Opening Book in: " + to_string(j) + " seconds \r";
         programOutput("Selected Book: " + bookNames.at(localPageNo-1) + " Opening Book in: " + to_string(j) + " seconds \r",true);
 
@@ -362,9 +392,13 @@ void displayPages()
 
     command c;
 
+    Magick::Image im;
+
+
     bool localQuit = false;
     bool doublepagemode = false;
     bool rotateimage = true;
+  //  int imh,imw;
 
     while(!localQuit && !globalQuit)
     {
@@ -379,25 +413,52 @@ void displayPages()
                     {
                         case 1:
                              // display page image
-                             imageName = bookFolder + imageNameBase + c.op2 + ".jpg";
-                        break;
-                        default:
-                        break;
+                             imageName = bookFolder;
+
+                             //read pdf into
+
+
+                             im.density(Magick::Point(150));
+                             im.read(screenGeom,bookFolder + "["+ c.op2 + "]");
+
+                             im.adaptiveResize(Magick::Geometry(768, 1366)); //screenGeom
+                             im.write("Output.png");
+                      //       imw = im.columns();
+                       //      imh = im.rows();
+
+                             // Unpack Magick++ pixels into OpenCV Mat structure
+                            if(copyImageToMat(im,image)) {programOutput("Data was successfully copied");}
+                            // Mat tempImage(imh,imw,CV_8UC3);
+
+                            // im.write(0,0,imw,imh,"BGR",Magick::CharPixel,tempImage.data);
+                           //  image = tempImage;
+                             //TODO use image magick to read images from a PDF on the fly and write to a cv::Mat
+                             // https://stackoverflow.com/questions/41841553/convert-magickimage-to-cvmat
+                             // https://legacy.imagemagick.org/discourse-server/viewtopic.php?t=13301
+
+                           //image = imread(samples::findFile("Output.png"), IMREAD_COLOR );
+                            //imwrite("cvoutput.png",image); // appears that the Image to mat copy is not working.
+                            // in the meantime workaround in place that will read and write to disc to convert from Magick to Mat
+
+                            break;
+                     //   default:
+                       //     break;
                     }
 
                 programOutput(imageName);
 
 
 
-                image = imread( samples::findFile( imageName ), IMREAD_COLOR );
+               // image = imread( samples::findFile( imageName ), IMREAD_COLOR );
                 if(doublepagemode)  //This will execute if in double page mode and will combine the page and the following page
-                {
+                { //TODO enable doublepagemode for directly reading pdf
                      // need error checking here to make sure it is valid integer
-                    np = stoi(c.op2);
+           /*         np = stoi(c.op2);
                     np++ ;
                     npStr = imageNameBase + to_string(np) + ".jpg";
                     image2 = imread( samples::findFile(npStr), IMREAD_COLOR );
                     hconcat(image,image2,image);
+                    */
 
                 }
 
@@ -482,10 +543,17 @@ void displayPages()
 int main( int argc, char** argv )
 {
 
+Magick::InitializeMagick(*argv);
+
+
 
 getScreenResolution(screenWidth,screenHeight);
+
+
+
 cout << "Screen Resolution is Width: " << to_string(screenWidth) << " Pixels Height: " << to_string(screenHeight)<< " Pixels" << std::endl;
 
+Magick::Geometry screenGeom((size_t) screenWidth, (size_t) screenHeight);
 
 std::thread pageScanningThread(pageScan);
 
