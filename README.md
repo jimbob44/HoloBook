@@ -4,6 +4,8 @@ Projector Book Scanner
 This project is a prototype proof of concept utilising OpenCV and a C++ port of ZXing to create a QR scanner. This QR scanner is then used with a physical book to create a
 projection of each page of a digital book.
 
+For a demonstration of the project refer video here.
+
 
 ## Build instructions
 
@@ -26,3 +28,4 @@ cmake --build .
 
 Use the Cmake GUI ensure that it has found the install location of OpenCV then generate and build using preferred build system. Note I have not tried building this with
 visual studio or any other compiler other an minGW so not sure if there will be issues compiling with this.
+
