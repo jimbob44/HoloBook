@@ -36,7 +36,7 @@ Mat rotate(Mat src, double angle)
 vector<string> get_directories(const string& s)
 {
     vector<string> r;
-    for(auto& p : experimental::filesystem::directory_iterator(s))
+    for(auto& p : DIRECTORY_ITERATOR)
             r.push_back(p.path().string());
 
 
@@ -187,7 +187,7 @@ auto putTextlam = [](int point1, int point2,Mat img,string dispString)
                 Point org(point1, point2);
                 putText(img, dispString, org,
                 FONT_HERSHEY_SIMPLEX, 0.5,
-                Scalar(0, 0, 0), 1, LINE_AA);
+                Scalar(255, 0, 0), 1, LINE_AA);
 
 };
 
@@ -208,7 +208,11 @@ while(j !=0 )
 {
     localPageNo = stoi(getPage());
 
+    #ifdef _WIN32 // windows use Sleep function in ms on linux needs lower case sleep function in seconds
+    Sleep(1000);
+    #else
     sleep(1);
+    #endif
     if(localPageNo <= bookList.size() && localPageNo != 0)
     {
         bookFolder = bookList.at(localPageNo-1)  + "/";
@@ -216,7 +220,7 @@ while(j !=0 )
         programOutput("Selected Book: " + bookNames.at(localPageNo-1) + " Opening Book in: " + to_string(j) + " seconds \r",true);
 
         // Generate a blank white image to draw text on
-        Mat bookListImage(screenWidth,screenHeight, CV_8UC3,
+            Mat bookListImage(screenWidth,screenHeight, CV_8UC3,
               Scalar(255, 255, 255));
         //make a window that will fill the entire screen
               namedWindow( "Book Selector", WINDOW_NORMAL| WINDOW_FREERATIO); // Create a window for display. Only execute on first loop
@@ -230,13 +234,17 @@ while(j !=0 )
             for (auto & element: bookNames)
             {
                 // write out each book that is in the database in a list
-                putTextlam(30,100 + n*25,bookListImage,to_string(n) + " " + element);
+                putTextlam(30,100 + n*75,bookListImage,to_string(n) + " " + element);
                 n++;
             }
             // Show the countdown until the chosen book is selected
             putTextlam(30,100,bookListImage,displayString);
 
-        //show the image with the list of books and the selection countdown
+
+
+        //rotate the image 90 degree
+        rotate(bookListImage,bookListImage,ROTATE_90_COUNTERCLOCKWISE);
+         //show the image with the list of books and the selection countdown
         imshow("Book Selector",bookListImage);
         waitKey(1); // wait 1 millisecond between refreshes
 
@@ -271,7 +279,7 @@ void pageScan()
     int sizeofscan;
     #endif // PI
 
-    string CurrentPage = "5";
+    string CurrentPage = "1";
     string QuitPage = "10";
 
     string localPageNo;
@@ -289,7 +297,7 @@ void pageScan()
 
     while(!localQuit && !globalQuit)
     {
-
+        
         #ifdef PI
         sizeofscan = QRCodeScan(maxbufsize,retbuf);
         #else
@@ -486,10 +494,9 @@ int main( int argc, char** argv )
 getScreenResolution(screenWidth,screenHeight);
 cout << "Screen Resolution is Width: " << to_string(screenWidth) << " Pixels Height: " << to_string(screenHeight)<< " Pixels" << std::endl;
 
+std::thread bookSelectorThread(bookSelector);
 
 std::thread pageScanningThread(pageScan);
-
-std::thread bookSelectorThread(bookSelector);
 
 bookSelectorThread.join();
 
