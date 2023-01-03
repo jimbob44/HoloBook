@@ -4,6 +4,8 @@ Projector Book Scanner
 This project is a prototype proof of concept utilising OpenCV and a C++ port of ZXing to create a QR scanner. This QR scanner is then used with a physical book to create a
 projection of each page of a digital book.
 
+For a demonstration of the project refer video here.
+
 
 ## Build instructions
 
