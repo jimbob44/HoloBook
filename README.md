@@ -1,5 +1,5 @@
 # HoloBook
-Projector Book Scanner
+Projector Book E-Reader
 
 This project is a prototype proof of concept utilising OpenCV and a C++ port of ZXing to create a QR scanner. This QR scanner is then used with a physical book to create a
 projection of each page of a digital book. It is a way to build an e-reader using an existing computer, webcam and projector.
@@ -50,19 +50,11 @@ In order to use the holobook you will need the following
 
 ### Setting up the digital library
 
-As this project is purely a proof of concept at this stage the digital library is very basic and requires some preprocessing before you can add books.
+As this project is purely a proof of concept at this stage the digital library is very basic and requires some preprocessing before you can add books. In future I may improve this so that PDF or e-pub files can be directly added to the library without preprocessing.
 In the same folder as the compiled executable is a folder named Books. In this folder each book has its own subfolder. The title of the subfolder should be the same as the title of the book. In this folder there should be a .jpg file for each page of the book to display. These .jpg files must be named test-#.jpg, where # corresponds to the page number. i.e test-1.jpg, test-2.jpg, test-3.jpg etc
 
-To create these file names from a PDF I used Imagemagick on a linux machine. Refer to weblink below for instructions on how to do this.
+To create these file names from a PDF I used ImageMagick on a linux machine. Refer to weblink below for instructions on how to do this.
 
 https://jdhao.github.io/2019/11/20/convert_pdf_to_image_imagemagick/
 
-
-
-
-
-
-
-
-
-
+Note the code has the first 10 pages of 2 out of copyright charles dickens novels (Oliver Twist and A Tale of Two Cities) already set up as a demonstration.
