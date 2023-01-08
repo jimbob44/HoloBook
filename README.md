@@ -6,7 +6,7 @@ projection of each page of a digital book. It is a way to build an e-reader usin
 
 For a short video demonstration of the prototype in action click the link below.
 
-https://youtube.com/shorts/ifT_lcoJkRU?feature=share
+https://www.youtube.com/shorts/ifT_lcoJkRU
 
 ## Build instructions
 
